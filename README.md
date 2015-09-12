@@ -11,4 +11,18 @@ To run, get the repo and run:
 
 In the repo's root directory. Enjoy some pretty imagery.
 
-
+Future Plans
+------------
+- Generator Shapes
+	- Point (current)
+	- Circle
+	- Rect
+	- Mask
+- Generator Velocity Shapes
+	- Point
+	- Circle (current)
+	- Wedge
+	- Linear
+- Zones
+	- Destroy Particles
+	- Arbitrary Functions
