@@ -65,44 +65,53 @@ void init() {
 
 int particle_draw(struct Particle particle, SDL_Texture *tex, SDL_Renderer *renderer) {
 	int life = particle.life;
-	float size = 8+(life < 0.1*BASE_LIFE ? life*BASE_SIZE/(0.1*BASE_LIFE): BASE_SIZE);
-	SDL_RenderCopy(renderer, tex, NULL, &(SDL_Rect){particle.x - size/2, particle.y - size/2, size, size});
-	return 1;
+	if(life > 0){
+		float size = 8+(life < 0.1*BASE_LIFE ? life*BASE_SIZE/(0.1*BASE_LIFE): BASE_SIZE);
+		SDL_RenderCopy(renderer, tex, NULL, &(SDL_Rect){particle.x - size/2, particle.y - size/2, size, size});
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 int draw2(struct Particle particle, SDL_Texture *tex, SDL_Renderer *renderer) {
 	int life = particle.life;
-	int r, g, b;
-	r = life > BASE_LIFE? 255 : life*(255/BASE_LIFE);
-	if(life < 0.25*BASE_LIFE) {
-		r = life*255/(0.25*BASE_LIFE);
+	if(life > 0) {
+		int r, g, b;
+		r = life > BASE_LIFE? 255 : life*(255/BASE_LIFE);
+		if(life < 0.25*BASE_LIFE) {
+			r = life*255/(0.25*BASE_LIFE);
+		} else {
+			r = 255;
+		}
+		if(life < 0.25*BASE_LIFE) {
+			g = 0;
+		} else if(life < 0.75*BASE_LIFE) {
+			g = -128 + life*512.0/BASE_LIFE;
+		} else {
+			g = 255;
+		}
+		if(life < 0.5*BASE_LIFE) {
+			b = 0;
+		} else if(life < BASE_LIFE) {
+			b = -255 + life*512.0/BASE_LIFE;
+		} else {
+			b = 255;
+		}
+		float size = life < 0.1*BASE_LIFE ? life*BASE_SIZE/(0.1*BASE_LIFE): BASE_SIZE;
+		SDL_SetTextureColorMod(tex, r, g, b);
+		SDL_RenderCopy(renderer, tex, NULL, &(SDL_Rect){particle.x - size/2, particle.y - size/2, size, size});
+		return 1;
 	} else {
-		r = 255;
+		return 0;
 	}
-	if(life < 0.25*BASE_LIFE) {
-		g = 0;
-	} else if(life < 0.75*BASE_LIFE) {
-		g = -128 + life*512.0/BASE_LIFE;
-	} else {
-		g = 255;
-	}
-	if(life < 0.5*BASE_LIFE) {
-		b = 0;
-	} else if(life < BASE_LIFE) {
-		b = -255 + life*512.0/BASE_LIFE;
-	} else {
-		b = 255;
-	}
-	float size = life < 0.1*BASE_LIFE ? life*BASE_SIZE/(0.1*BASE_LIFE): BASE_SIZE;
-	SDL_SetTextureColorMod(tex, r, g, b);
-	SDL_RenderCopy(renderer, tex, NULL, &(SDL_Rect){particle.x - size/2, particle.y - size/2, size, size});
-	return 1;
 }
 
 //Emits particles at random angles
-//pps is the nominal emission rate, in particles per second
-struct Particle particle_emit_circle(struct Particle particle, int dt, int x, int y, float pps) {
-	if(particle.life <= 0){
+//ppf is the emission rate, in particles per frame
+struct Particle particle_emit_circle(struct Particle particle, int dt, int x, int y, float ppf) {
+	if(particle.life <= 0 && ppf > 1){
+		ppf--;
 		particle.life = BASE_LIFE + rand() * 500.0 / RAND_MAX;
 		particle.x = x;
 		particle.y = y;
@@ -164,6 +173,11 @@ main(int argc, char *argv[]) {
 			if(event.type == SDL_QUIT) {
 				quit(0);
 			}
+		}
+		dt = SDL_GetTicks() - t;
+		//Stabilise frames
+		if(1000.0/60.0 > dt) {
+			SDL_Delay(1000.0/60.0 - dt);
 		}
 		dt = SDL_GetTicks() - t;
 		printf("%4.3f\n", 1.0/dt*1000.0);
