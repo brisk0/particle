@@ -109,7 +109,7 @@ int draw2(struct Particle particle, SDL_Texture *tex, SDL_Renderer *renderer) {
 
 //Emits particles at random angles
 //ppf is the emission rate, in particles per frame
-struct Particle particle_emit_circle(struct Particle particle, int dt, int x, int y, float ppf) {
+struct Particle particle_emit_circle(struct Particle particle, int x, int y, float ppf) {
 	if(particle.life <= 0 && ppf > 1){
 		ppf--;
 		particle.life = BASE_LIFE + rand() * 500.0 / RAND_MAX;
@@ -117,6 +117,28 @@ struct Particle particle_emit_circle(struct Particle particle, int dt, int x, in
 		particle.y = y;
 		float theta = rand() * 2*M_PI / RAND_MAX;
 		float v = rand() * 30.0 / RAND_MAX;
+		particle.vx = v * cos(theta);
+		particle.vy = v * sin(theta);
+	}
+	return particle;
+}
+
+//Emits particles at random bounded angles
+//particle:	particle to emit
+//x, y:		point of particle generation
+//vrange:	difference between maximum and minimum magnitude of velocity
+//vmin:		minimum magnitude of velocity
+//angle:	difference between maximum and minimum angle to emit
+//angle_offset:	minimum angle
+//ppf:		particles per frame
+struct Particle particle_emit_sector(struct Particle particle, float x, float y, float vrange, float vmin, float angle, float angle_offset, float ppf) {
+	if(particle.life <= 0 && ppf > 1){
+		ppf--;
+		particle.life = BASE_LIFE + rand() * 500.0 / RAND_MAX;
+		particle.x = x;
+		particle.y = y;
+		float theta = rand() * angle / RAND_MAX + angle_offset;
+		float v = rand() * vrange / RAND_MAX + vmin;
 		particle.vx = v * cos(theta);
 		particle.vy = v * sin(theta);
 	}
@@ -184,7 +206,7 @@ main(int argc, char *argv[]) {
 		t += dt;
 		for(int i = 0; i < PARTICLE_COUNT; i++) {
 			particles[i] = particle_tick(particles[i], dt);
-			particles[i] = particle_emit_circle(particles[i], dt, WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 100);
+			particles[i] = particle_emit_circle(particles[i], WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 100);
 			particle_draw(particles[i], back_sprite, renderer);
 		}
 		for(int i = 0; i < PARTICLE_COUNT; i++) {
