@@ -195,12 +195,6 @@ main(int argc, char *argv[]) {
 		SDL_RenderClear(renderer);
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
-			if(event.type == SDL_MOUSEMOTION) {
-				SDL_MouseMotionEvent motion = event.motion;
-				x = motion.x;
-				y = motion.y;
-
-			}
 			if(event.type == SDL_QUIT) {
 				quit(0);
 			}
@@ -213,6 +207,7 @@ main(int argc, char *argv[]) {
 		dt = SDL_GetTicks() - t;
 		printf("%4.3f\n", 1.0/dt*1000.0);
 		t += dt;
+		SDL_GetMouseState(&x, &y);
 		for(int i = 0; i < PARTICLE_COUNT; i++) {
 			particles[i] = particle_tick(particles[i], dt);
 			particles[i] = particle_emit_circle(particles[i], x, y, 100);
