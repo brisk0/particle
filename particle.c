@@ -160,6 +160,9 @@ int
 main(int argc, char *argv[]) {
 	init();
 
+	int x = WINDOW_WIDTH/2;
+	int y = WINDOW_HEIGHT/2;
+
 	//Setup Rendering System
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -192,6 +195,12 @@ main(int argc, char *argv[]) {
 		SDL_RenderClear(renderer);
 		SDL_Event event;
 		while(SDL_PollEvent(&event)) {
+			if(event.type == SDL_MOUSEMOTION) {
+				SDL_MouseMotionEvent motion = event.motion;
+				x = motion.x;
+				y = motion.y;
+
+			}
 			if(event.type == SDL_QUIT) {
 				quit(0);
 			}
@@ -206,7 +215,7 @@ main(int argc, char *argv[]) {
 		t += dt;
 		for(int i = 0; i < PARTICLE_COUNT; i++) {
 			particles[i] = particle_tick(particles[i], dt);
-			particles[i] = particle_emit_circle(particles[i], WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 100);
+			particles[i] = particle_emit_circle(particles[i], x, y, 100);
 			particle_draw(particles[i], back_sprite, renderer);
 		}
 		for(int i = 0; i < PARTICLE_COUNT; i++) {
