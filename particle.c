@@ -10,14 +10,6 @@
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-struct ControllerState {
-	int a;
-	float leftx;
-	float lefty;
-} controller_state;
-
-//in pixels per second
-#define WALKING_SPEED 128.0
 #define PARTICLE_COUNT 1000
 #define BASE_LIFE 1000
 #define BASE_SIZE 16.0
@@ -48,7 +40,6 @@ void init() {
 		quit(EXIT_FAILURE);
 	}
 
-	
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER)) {
 		fprintf(stderr, "Initialisation Error: %s", SDL_GetError());
 		quit(EXIT_FAILURE);
@@ -57,10 +48,6 @@ void init() {
 	//Hints
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-	//Activate all existing controllers
-	SDL_GameControllerEventState(SDL_ENABLE);
-	SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
-	
 }
 
 int particle_draw(struct Particle particle, SDL_Texture *tex, SDL_Renderer *renderer) {
