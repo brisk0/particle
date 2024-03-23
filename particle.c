@@ -124,8 +124,8 @@ struct Particle particle_emit_sector(struct Particle particle, float x, float y,
 		particle.life = BASE_LIFE + rand() * 500.0 / RAND_MAX;
 		particle.x = x;
 		particle.y = y;
-		float theta = rand() * angle / RAND_MAX + angle_offset;
-		float v = rand() * vrange / RAND_MAX + vmin;
+		float theta = rand() * angle / (float)RAND_MAX + angle_offset;
+		float v = rand() * vrange / (float)RAND_MAX + vmin;
 		particle.vx = v * cos(theta);
 		particle.vy = v * sin(theta);
 	}
